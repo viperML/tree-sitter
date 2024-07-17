@@ -1,37 +1,36 @@
-use std::{env, error::Error, fs::File, path::PathBuf};
+#![deny(unsafe_op_in_unsafe_fn)]
+mod dl;
 
-use tree_sitter::{Language, Parser};
-
-use libc::{dlopen, dlsym, RTLD_NOW};
 use std::os::fd::AsRawFd;
+use std::{env, ffi::CString, fs::File, path::PathBuf};
+
+use dl::{Library, Symbol};
+use tree_sitter::Language;
 
 fn main() {
+    let lang = "javascript";
     let grammar_path = env::var("TS_GRAMMAR_PATH").unwrap_or(String::from("result"));
 
     let f = File::options()
         .read(true)
-        .open(PathBuf::from(grammar_path).join("tree-sitter-html-grammar/parser"))
+        .open(
+            PathBuf::from(grammar_path)
+                .join(format!("tree-sitter-{lang}-grammar"))
+                .join("parser"),
+        )
         .unwrap();
 
     let path = format!("/proc/self/fd/{}", f.as_raw_fd());
     println!("{path:?}");
 
-    let x = unsafe { dlopen(path.as_ptr() as _, RTLD_NOW) };
-    println!("{:x?}", x);
+    let lib = unsafe { Library::open(path) }.unwrap();
 
-    if x.is_null() {
-        panic!("Couldn't dlopen");
-    }
+    println!("{lib:?}");
 
-    let y = unsafe { dlsym(x, c"tree_sitter_html".as_ptr()) };
-    println!("{:x?}", y);
-    if y.is_null() {
-        panic!("dlsym null");
-    }
+    let sym_name = CString::new(format!("tree_sitter_{lang}")).unwrap();
+    let sym: Symbol<extern "C" fn() -> Language> = unsafe { lib.get(sym_name) }.unwrap();
+    println!("{sym:?}");
 
-    let z: extern "C" fn() -> Language = unsafe { core::mem::transmute(y) };
-
-    let lang = z();
-    println!("{:?}", lang);
-    println!("{:?}", lang.version());
+    let l = unsafe { sym.as_raw() }();
+    println!("{l:?}");
 }
