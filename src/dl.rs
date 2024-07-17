@@ -12,15 +12,15 @@ pub struct Library {
 }
 
 #[derive(Debug)]
-pub struct DlError(String);
+pub struct LibError(String);
 
-impl fmt::Display for DlError {
+impl fmt::Display for LibError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl std::error::Error for DlError {}
+impl std::error::Error for LibError {}
 
 #[derive(Debug, Clone)]
 pub struct Symbol<'lib, T> {
@@ -29,7 +29,7 @@ pub struct Symbol<'lib, T> {
 }
 
 impl Library {
-    pub unsafe fn open<S: AsRef<OsStr>>(filename: S) -> Result<Self, DlError> {
+    pub unsafe fn open<S: AsRef<OsStr>>(filename: S) -> Result<Self, LibError> {
         let filename = filename.as_ref();
         let s = filename.as_encoded_bytes();
 
@@ -37,13 +37,13 @@ impl Library {
 
         if ptr.is_null() {
             let error = unsafe { CString::from_raw(dlerror()) };
-            Err(DlError(error.to_str().unwrap().to_owned()))
+            Err(LibError(error.to_str().unwrap().to_owned()))
         } else {
             Ok(Self { ptr })
         }
     }
 
-    pub unsafe fn get<T, S>(&self, symbol: S) -> Result<Symbol<'_, T>, DlError>
+    pub unsafe fn get<T, S>(&self, symbol: S) -> Result<Symbol<'_, T>, LibError>
     where
         S: AsRef<CStr>,
     {
@@ -53,7 +53,7 @@ impl Library {
 
         if ptr.is_null() {
             let error = unsafe { CString::from_raw(dlerror()) };
-            Err(DlError(error.to_str().unwrap().to_owned()))
+            Err(LibError(error.to_str().unwrap().to_owned()))
         } else {
             Ok(Symbol {
                 ptr,
