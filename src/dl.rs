@@ -24,7 +24,7 @@ impl std::error::Error for DlError {}
 
 #[derive(Debug, Clone)]
 pub struct Symbol<'lib, T> {
-    pub ptr: *mut c_void,
+    ptr: *mut c_void,
     _phantom: PhantomData<&'lib T>,
 }
 
