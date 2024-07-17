@@ -6,6 +6,7 @@ mkShell {
     rust-analyzer
     rustfmt
     clippy
+    gdb
   ];
   env.RUST_SRC_PATH = "${rustPlatform.rustLibSrc}";
 }

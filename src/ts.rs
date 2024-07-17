@@ -1,7 +1,14 @@
-use std::{env, ffi::CString, fs::File, os::fd::AsRawFd, path::PathBuf};
+use std::{
+    env,
+    ffi::CString,
+    fs::{self, File},
+    os::fd::AsRawFd,
+    path::PathBuf,
+};
 
 use once_cell::sync::Lazy;
 use tree_sitter::Language;
+use tree_sitter_highlight::{HighlightConfiguration, Highlighter};
 
 use crate::dl::Symbol;
 
@@ -29,4 +36,58 @@ where
 
     let res = unsafe { sym.as_raw() }();
     return res;
+}
+
+pub fn load_highlighter_config<S>(name: S) -> HighlightConfiguration
+where
+    S: AsRef<str>,
+{
+    let name = name.as_ref();
+
+    let language = load_language(name);
+    let v = language.version();
+    println!("{language:?}, {v}");
+
+    let grammar_path = PathBuf::from(env::var("TS_GRAMMAR_PATH").unwrap())
+        .join(format!("tree-sitter-{name}-grammar"));
+
+    let highlights_query =
+        fs::read_to_string(grammar_path.join("queries").join("highlights.scm")).unwrap();
+
+    let injections_query =
+        fs::read_to_string(grammar_path.join("queries").join("injections.scm")).unwrap();
+
+    let locals_query = fs::read_to_string(grammar_path.join("queries").join("locals.scm")).unwrap();
+
+    let mut config = HighlightConfiguration::new(
+        language,
+        name,
+        &highlights_query,
+        &injections_query,
+        &locals_query,
+    )
+    .unwrap();
+
+    config.configure(&[
+        "attribute",
+        "constant",
+        "function.builtin",
+        "function",
+        "keyword",
+        "operator",
+        "property",
+        "punctuation",
+        "punctuation.bracket",
+        "punctuation.delimiter",
+        "string",
+        "string.special",
+        "tag",
+        "type",
+        "type.builtin",
+        "variable",
+        "variable.builtin",
+        "variable.parameter",
+    ]);
+
+    return config;
 }
