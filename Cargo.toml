@@ -1,0 +1,12 @@
+[package]
+name = "ts-pg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "0.2.155"
+tree-sitter = "0.22.6"
+tree-sitter-rust = "0.21.2"
+
+[build-dependencies]
+cc = "1.1.5"
