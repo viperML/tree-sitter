@@ -19,7 +19,7 @@ where
     let name = name.as_ref();
     let grammar_path = PathBuf::from(env::var("TS_GRAMMAR_PATH").unwrap());
 
-    let f = File::options()
+    let file = File::options()
         .read(true)
         .open(
             grammar_path
@@ -28,13 +28,16 @@ where
         )
         .unwrap();
 
-    let lib =
-        unsafe { crate::dl::Library::open(format!("/proc/self/fd/{}", f.as_raw_fd())) }.unwrap();
+    let library =
+        unsafe { crate::dl::Library::open(format!("/proc/self/fd/{}", file.as_raw_fd())) }.unwrap();
 
     let sym_name = CString::new(format!("tree_sitter_{name}")).unwrap();
-    let sym: Symbol<extern "C" fn() -> Language> = unsafe { lib.get(sym_name) }.unwrap();
+    let sym: Symbol<extern "C" fn() -> Language> = unsafe { library.get(sym_name) }.unwrap();
 
     let res = unsafe { sym.as_raw() }();
+
+    println!("{:?} @{}:{}", res.version(), file!(), line!());
+
     return res;
 }
 

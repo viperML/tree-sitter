@@ -8,7 +8,7 @@ use libc::{c_void, dlclose, dlerror, dlopen, dlsym, RTLD_NOW};
 
 #[derive(Debug)]
 pub struct Library {
-    ptr: *mut c_void,
+    pub ptr: *mut c_void,
 }
 
 #[derive(Debug)]
@@ -22,7 +22,7 @@ impl fmt::Display for LibError {
 
 impl std::error::Error for LibError {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Symbol<'lib, T> {
     ptr: *mut c_void,
     _phantom: PhantomData<&'lib T>,
@@ -43,7 +43,7 @@ impl Library {
         }
     }
 
-    pub unsafe fn get<T, S>(&self, symbol: S) -> Result<Symbol<'_, T>, LibError>
+    pub fn get<T, S>(&self, symbol: S) -> Result<Symbol<'_, T>, LibError>
     where
         S: AsRef<CStr>,
     {
@@ -70,7 +70,17 @@ impl Drop for Library {
 }
 
 impl<'lib, T> Symbol<'lib, T> {
-    pub unsafe fn as_raw(&self) -> &T {
-        unsafe { &*(&self.ptr as *const *mut _ as *const T) }
+    pub unsafe fn flat_map<F, R>(&self, func: F)
+    where
+        F: FnOnce(&T) -> R,
+    {
+        let casted = unsafe { &*(&self.ptr as *const *mut _ as *const T) };
+        func(casted);
     }
 }
+
+// impl<'lib, T> Symbol<'lib, T> {
+//     pub unsafe fn as_raw(&self) -> &T {
+//         unsafe { &*(&self.ptr as *const *mut _ as *const T) }
+//     }
+// }
