@@ -24,7 +24,7 @@ impl std::error::Error for LibError {}
 
 #[derive(Debug)]
 pub struct Symbol<'lib, T> {
-    ptr: *mut c_void,
+    value: &'lib T,
     _phantom: PhantomData<&'lib T>,
 }
 
@@ -46,6 +46,7 @@ impl Library {
     pub fn get<T, S>(&self, symbol: S) -> Result<Symbol<'_, T>, LibError>
     where
         S: AsRef<CStr>,
+        T: std::fmt::Pointer,
     {
         let s = symbol.as_ref();
 
@@ -55,8 +56,10 @@ impl Library {
             let error = unsafe { CString::from_raw(dlerror()) };
             Err(LibError(error.to_str().unwrap().to_owned()))
         } else {
+            // let casted =  unsafe { &*(&ptr as *const *mut _ as *const T) };
+            let casted: T = unsafe { std::mem::transmute(ptr) };
             Ok(Symbol {
-                ptr,
+                value: &casted,
                 _phantom: PhantomData,
             })
         }
@@ -69,15 +72,15 @@ impl Drop for Library {
     }
 }
 
-impl<'lib, T> Symbol<'lib, T> {
-    pub unsafe fn flat_map<F, R>(&self, func: F)
-    where
-        F: FnOnce(&T) -> R,
-    {
-        let casted = unsafe { &*(&self.ptr as *const *mut _ as *const T) };
-        func(casted);
-    }
-}
+// impl<'lib, T> Symbol<'lib, T> {
+//     pub unsafe fn flat_map<F, R>(&self, func: F)
+//     where
+//         F: FnOnce(&T) -> R,
+//     {
+//         // let casted = unsafe { &*(&self.value as *const *mut _ as *const T) };
+//         func(casted);
+//     }
+// }
 
 // impl<'lib, T> Symbol<'lib, T> {
 //     pub unsafe fn as_raw(&self) -> &T {
