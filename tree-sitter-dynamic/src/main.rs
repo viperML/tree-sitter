@@ -67,33 +67,22 @@ fn main() {
 
     unsafe {
         let lib_ptr = dlopen(name.as_ptr() as _, RTLD_LAZY | RTLD_LOCAL);
-        if lib_ptr.is_null() {
-            panic!();
-        }
         println!("1: {lib_ptr:x?}");
 
         let sym = dlsym(lib_ptr, c"tree_sitter_javascript".as_ptr());
-        if sym.is_null() {
-            panic!();
-        }
 
         let lib: unsafe extern "C" fn() -> Language = mem::transmute(sym);
         let lib = lib();
-        let v = lib.version();
-        println!("{lib:?}->{v}");
+        let _v = lib.version();
 
 
-        let lib_ptr2 = dlopen(name.as_ptr() as _, RTLD_NOW);
-        if lib_ptr2.is_null() {
-            panic!();
-        }
-        println!("2: {lib_ptr2:x?}");
+        let lib_ptr2 = dlopen(name.as_ptr() as _, RTLD_LAZY | RTLD_LOCAL);
+        println!("1: {lib_ptr:x?}");
 
         dlclose(lib_ptr2);
         dlclose(lib_ptr2);
         println!("closed");
 
-        let v = lib.version();
-        println!("{lib:?}->{v}");
+        let _v = lib.version();
     }
 }
