@@ -7,14 +7,14 @@ use tree_sitter_highlight::HighlightConfiguration;
 
 const BASE: &'static str = "TS_GRAMMAR_PATH";
 
-struct DynTS {
-    lib: Library,
+pub struct DynTS {
+    _lib: Library,
     language: Language,
     highlight_config: HighlightConfiguration,
 }
 
 impl DynTS {
-    unsafe fn new<S>(language: S, recognized_names: &[impl AsRef<str>]) -> eyre::Result<Self>
+    pub unsafe fn new<S>(language: S, recognized_names: &[impl AsRef<str>]) -> eyre::Result<Self>
     where
         S: AsRef<str>,
     {
@@ -40,17 +40,17 @@ impl DynTS {
         config.configure(recognized_names);
 
         Ok(DynTS {
-            lib,
+            _lib: lib,
             language,
             highlight_config: config,
         })
     }
 
-    fn language<'s>(&'s self) -> &'s Language {
+    pub fn language<'s>(&'s self) -> &'s Language {
         &self.language
     }
 
-    fn highlight_config<'s>(&'s self) -> &'s HighlightConfiguration {
+    pub fn highlight_config<'s>(&'s self) -> &'s HighlightConfiguration {
         &self.highlight_config
     }
 }

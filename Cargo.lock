@@ -162,6 +162,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tree-sitter-cat"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "tree-sitter-dynamic",
+ "tree-sitter-highlight",
+]
+
+[[package]]
 name = "tree-sitter-dynamic"
 version = "0.1.0"
 dependencies = [

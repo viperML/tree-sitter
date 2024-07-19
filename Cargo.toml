@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
-members = [
+members = [ "tree-sitter-cat",
     "tree-sitter-dynamic",
 ]
