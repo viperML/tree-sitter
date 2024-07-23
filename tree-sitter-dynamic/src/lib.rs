@@ -21,7 +21,7 @@ impl DynTS {
         let l_name = language.as_ref();
         let grammar_path = env::var(BASE)?;
         let path_base =
-            std::fs::canonicalize(grammar_path)?.join(format!("tree-sitter-{l_name}-grammar"));
+            std::fs::canonicalize(grammar_path)?.join(format!("tree-sitter-{l_name}"));
 
         let lib = Library::new(path_base.join("parser"))?;
 
