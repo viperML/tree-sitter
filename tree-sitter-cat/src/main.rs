@@ -1,9 +1,9 @@
 use core::str;
 use std::io::{stdout, Write};
 
+use itertools::Itertools;
 use tree_sitter_dynamic::DynTS;
 use tree_sitter_highlight::{Highlight, HighlightEvent, Highlighter};
-use itertools::Itertools;
 
 fn main() -> eyre::Result<()> {
     let names = [
@@ -27,18 +27,19 @@ fn main() -> eyre::Result<()> {
         "variable.parameter",
     ];
 
-    let js = unsafe { DynTS::new("nix", &names)? };
+    let js = unsafe { DynTS::new("typescript", &names)? };
 
     let mut highlighter = Highlighter::new();
 
-    let s = br#"# shell.nix
-let
-  pkgs = import <nixpkgs> {};
-in
-  pkgs.mkShell {
-    packages = [  ];
-    # ...
-  }"#;
+    let s = br#"
+export function formatDate(date: Date): string {
+    return date.toLocaleDateString("en-uk", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    })
+}
+"#;
 
     let highlights = highlighter.highlight(js.highlight_config(), s, None, |_| None)?;
 
