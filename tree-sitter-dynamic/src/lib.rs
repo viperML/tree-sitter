@@ -30,9 +30,9 @@ impl DynTS {
 
         let language = symbol();
 
-        let highlights = fs::read_to_string(path_base.join("queries").join("highlights.scm"))?;
-        let injections = fs::read_to_string(path_base.join("queries").join("injections.scm"))?;
-        let locals = fs::read_to_string(path_base.join("queries").join("locals.scm"))?;
+        let highlights = fs::read_to_string(path_base.join("queries").join("highlights.scm")).unwrap_or_default();
+        let injections = fs::read_to_string(path_base.join("queries").join("injections.scm")).unwrap_or_default();
+        let locals = fs::read_to_string(path_base.join("queries").join("locals.scm")).unwrap_or_default();
 
         let mut config =
             HighlightConfiguration::new(symbol(), l_name, &highlights, &injections, &locals)?;

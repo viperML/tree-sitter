@@ -1,3 +1,4 @@
+use core::str;
 use std::io::{stdout, Write};
 
 use tree_sitter_dynamic::DynTS;
@@ -26,35 +27,28 @@ fn main() -> eyre::Result<()> {
         "variable.parameter",
     ];
 
-    let js = unsafe { DynTS::new("javascript", &names)? };
+    let js = unsafe { DynTS::new("nix", &names)? };
 
     let mut highlighter = Highlighter::new();
 
-    let s = br#"import { getCollection } from "astro:content";
-import Post from "./Post.astro";
-
-const blogEntries = (await getCollection("blog"))
-    .sort((a, b) => {
-        return b.data.pubDate.getTime() - a.data.pubDate.getTime();
-    })
-    .filter((elem) => {
-        if (elem.data.draft === true) {
-            return false;
-        } else {
-            return true;
-        }
-    });"#;
+    let s = br#"# shell.nix
+let
+  pkgs = import <nixpkgs> {};
+in
+  pkgs.mkShell {
+    packages = [  ];
+    # ...
+  }"#;
 
     let highlights = highlighter.highlight(js.highlight_config(), s, None, |_| None)?;
 
-    let mut color = false;
     print!("<pre>");
     for event in highlights {
         match event.unwrap() {
             HighlightEvent::Source { start, end } => {
-                for i in start..end {
-                    stdout().write_all(&[s[i]])?;
-                }
+                let content = str::from_utf8(&s[start..end])?;
+                let encoded = html_escape::encode_text(content);
+                print!("{}", encoded);
             }
             HighlightEvent::HighlightStart(Highlight(n)) => {
                 let name = names[n].split(".").join(" ");
