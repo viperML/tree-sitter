@@ -15,6 +15,11 @@ in {
   inherit grammars;
 
   allGrammars = pkgs.linkFarm "tree-sitter-all-grammars" (lib.pipe grammars [
+    (lib.flip builtins.removeAttrs (map (lang: "tree-sitter-${lang}") [
+      "perl"
+      "pod"
+      "sql"
+    ]))
     lib.attrsToList
     (map ({
       name,

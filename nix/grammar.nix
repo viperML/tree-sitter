@@ -2,15 +2,28 @@
   nv,
   meta,
   stdenv,
+  nodejs,
+  tree-sitter,
+  lib,
 }: let
   location = meta.location or ".";
+  generate = meta.generate or false;
 in
   stdenv.mkDerivation {
     inherit (nv) pname src;
     version = nv.date;
 
+    nativeBuildInputs = [
+      tree-sitter
+      nodejs
+    ];
+
     buildPhase = ''
       pushd ${location}
+
+      ${lib.optionalString generate ''
+        tree-sitter generate
+      ''}
 
       if [[ -f src/scanner.c ]]; then
         $CC -c -Isrc src/scanner.c -o scanner.o

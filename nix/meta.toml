@@ -258,6 +258,7 @@ location = "dialects/helm"
 [tree-sitter-lalrpop]
 
 [tree-sitter-latex]
+generate = true
 
 [tree-sitter-ledger]
 
@@ -298,6 +299,7 @@ location = "tree-sitter-markdown-inline"
 [tree-sitter-meson]
 
 [tree-sitter-mlir]
+generate = true
 
 [tree-sitter-muttrc]
 
@@ -328,6 +330,7 @@ location = "grammars/ocaml"
 location = "grammars/interface"
 
 [tree-sitter-ocamllex]
+generate = true
 
 [tree-sitter-odin]
 
@@ -429,6 +432,7 @@ location = "psv"
 [tree-sitter-scala]
 
 [tree-sitter-scfg]
+generate = true
 
 [tree-sitter-scheme]
 
@@ -475,6 +479,7 @@ location = "sosl"
 [tree-sitter-svelte]
 
 [tree-sitter-swift]
+generate = true
 
 [tree-sitter-sxhkdrc]
 
@@ -489,6 +494,7 @@ location = "sosl"
 [tree-sitter-tcl]
 
 [tree-sitter-teal]
+generate = true
 
 [tree-sitter-templ]
 
@@ -533,6 +539,7 @@ location = "typescript"
 [tree-sitter-ungrammar]
 
 [tree-sitter-unison]
+generate = true
 
 [tree-sitter-usd]
 

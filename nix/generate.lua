@@ -39,9 +39,15 @@ for _, v in ipairs(sorted_parsers) do
     location = [[location = "]] .. v.parser.install_info.location .. [["]] .. "\n"
   end
 
+  local generate = ""
+  if v.parser.install_info.requires_generate_from_grammar == true then
+    generate = "generate = true\n"
+  end
+
   generated_text = generated_text
     .. "[tree-sitter-" .. v.name .. "]" .. "\n"
     .. location
+    .. generate
     .. "\n"
 end
 
