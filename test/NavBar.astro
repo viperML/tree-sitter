@@ -1,0 +1,49 @@
+---
+import { Image } from "astro:assets";
+import logo from "../img/avatar-text.svg";
+const { class: className } = Astro.props;
+---
+
+<header class:list={["flex justify-center", className]}>
+  <nav class="py-2 px-5 flex-auto flex justify-between items-center">
+    <a href="/" class="logo">
+      <Image src={logo} alt="Site logo." loading="eager" decoding="sync" />
+    </a>
+
+    <ul class="flex gap-4">
+      {
+        (() => {
+          if (import.meta.env.DEV === true) {
+            return (
+              <li>
+                <a href="/test">Test Page</a>
+              </li>
+            );
+          }
+        })()
+      }
+      <!-- <li>
+        <a href="/experiments">Experiments</a>
+      </li> -->
+      <li>
+        <a href="/blog">Blog</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style lang="scss">
+  header {
+    width: 100vw;
+    top: 0;
+    z-index: 100;
+    position: sticky;
+    font-weight: 500;
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    background-color: rgba(241, 241, 241, 0.9);
+
+  }
+</style>

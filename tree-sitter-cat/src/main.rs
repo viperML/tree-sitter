@@ -1,58 +1,33 @@
 use core::str;
-use std::io::{stdout, Write};
+use std::{fs, path::PathBuf};
 
+use clap::Parser;
 use itertools::Itertools;
-use tree_sitter_dynamic::DynTS;
-use tree_sitter_highlight::{Highlight, HighlightEvent, Highlighter};
+use tree_sitter_dynamic::{DynTS, STANDARD_CAPTURE_NAMES};
+use tree_sitter_highlight::{Highlight, HighlightEvent};
+
+#[derive(Debug, Parser)]
+struct Args {
+    lang: String,
+    file: PathBuf,
+}
 
 fn main() -> eyre::Result<()> {
-    let names = [
-        "attribute",
-        "constant",
-        "function.builtin",
-        "function",
-        "keyword",
-        "operator",
-        "property",
-        "punctuation",
-        "punctuation.bracket",
-        "punctuation.delimiter",
-        "string",
-        "string.special",
-        "tag",
-        "type",
-        "type.builtin",
-        "variable",
-        "variable.builtin",
-        "variable.parameter",
-    ];
+    let args = Args::parse();
+    let mut ts = DynTS::new(&args.lang, STANDARD_CAPTURE_NAMES)?;
 
-    let js = unsafe { DynTS::new("typescript", &names)? };
-
-    let mut highlighter = Highlighter::new();
-
-    let s = br#"
-export function formatDate(date: Date): string {
-    return date.toLocaleDateString("en-uk", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    })
-}
-"#;
-
-    let highlights = highlighter.highlight(js.highlight_config(), s, None, |_| None)?;
+    let contents = fs::read(&args.file)?;
 
     print!("<pre>");
-    for event in highlights {
+    for event in ts.highlight(&contents) {
         match event.unwrap() {
             HighlightEvent::Source { start, end } => {
-                let content = str::from_utf8(&s[start..end])?;
+                let content = str::from_utf8(&contents[start..end])?;
                 let encoded = html_escape::encode_text(content);
                 print!("{}", encoded);
             }
             HighlightEvent::HighlightStart(Highlight(n)) => {
-                let name = names[n].split(".").join(" ");
+                let name = STANDARD_CAPTURE_NAMES[n].split('.').join(" ");
                 print!("<span class=\"{}\">", name);
             }
             HighlightEvent::HighlightEnd => {
@@ -60,7 +35,7 @@ export function formatDate(date: Date): string {
             }
         }
     }
-    print!("</pre>");
+    println!("</pre>");
 
     Ok(())
 }
