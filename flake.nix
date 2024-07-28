@@ -10,10 +10,11 @@
 
     default = import ./nix {inherit pkgs;};
   in {
-    packages.${system} =
-      {
-        inherit (default) all-grammars;
-      }
-      // default.grammars;
+    legacyPackages.${system} = {
+      grammars = {
+        all = default.grammars;
+        filtered = default.filteredGrammars;
+      };
+    };
   };
 }
