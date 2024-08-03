@@ -1,7 +1,9 @@
 with import <nixpkgs> {};
-tree-sitter-grammars.tree-sitter-typescript.overrideAttrs (old: {
-  postInstall = ''
-    pwd
-    ls -la
-  '';
-})
+  tree-sitter-grammars.tree-sitter-typescript.overrideAttrs (old: {
+    postInstall =
+      # bash
+      ''
+        pwd
+        ls -la
+      '';
+  })

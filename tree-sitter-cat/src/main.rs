@@ -13,6 +13,7 @@ struct Args {
 }
 
 fn main() -> eyre::Result<()> {
+    color_eyre::install()?;
     let args = Args::parse();
     let mut ts = DynTS::new(&args.lang, STANDARD_CAPTURE_NAMES)?;
 

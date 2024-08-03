@@ -4,6 +4,13 @@
 ---@field name string
 ---@field parser ParserInfo
 
+local os = require("os")
+local ts_utils = require("nvim-treesitter.utils")
+
+local filename = ts_utils.join_path(ts_utils.get_package_path(), "lockfile.json")
+local lock = vim.fn.json_decode(vim.fn.readfile(filename))
+
+
 local parsers = require("nvim-treesitter.parsers").get_parser_configs()
 local sorted_parsers = {}
 
@@ -24,7 +31,7 @@ local generated_text = ""
 for _, v in ipairs(sorted_parsers) do
   generated_text = generated_text
     .. "[tree-sitter-" .. v.name .. "]" .. "\n"
-    .. [[src.git = "]] .. v.parser.install_info.url .. [["]] .. "\n"
+    .. [[src.manual = "]] .. lock[v.name].revision .. [["]] .. "\n"
     .. [[fetch.git = "]] .. v.parser.install_info.url .. [["]] .. "\n"
     .. "\n"
 end
@@ -51,4 +58,7 @@ for _, v in ipairs(sorted_parsers) do
     .. "\n"
 end
 
-vim.fn.writefile(vim.fn.split(generated_text, "\n"), "meta.toml")
+
+-- local lock = vim.fn.json_decode(vim.fn.readfile(filename))
+local meta = vim.json.encode(require("nvim-treesitter.parsers").get_parser_configs())
+vim.fn.writefile(vim.fn.split(meta, "\n"), "meta.json")

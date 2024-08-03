@@ -1,0 +1,47 @@
+{
+    "nvim-treesitter": {
+        "cargoLocks": null,
+        "date": "2024-08-03",
+        "extract": null,
+        "name": "nvim-treesitter",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "nvim-treesitter",
+            "repo": "nvim-treesitter",
+            "rev": "a7a3b9c10e8a5fe0da05ebb65db3ed1d164e612d",
+            "sha256": "sha256-Aesf0i3fFDvzB/J+serrn+kf9zK7m5spEXg8xn3AbFI=",
+            "type": "github"
+        },
+        "version": "a7a3b9c10e8a5fe0da05ebb65db3ed1d164e612d"
+    },
+    "tree-sitter": {
+        "cargoLocks": {
+            "Cargo.lock": [
+                "./tree-sitter-779566f588f0cd9a13e4c78b805e82717c98eff3/Cargo.lock",
+                {}
+            ]
+        },
+        "date": "2024-07-31",
+        "extract": null,
+        "name": "tree-sitter",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "tree-sitter",
+            "repo": "tree-sitter",
+            "rev": "779566f588f0cd9a13e4c78b805e82717c98eff3",
+            "sha256": "sha256-J84RD+boiEmzcX1L6XR2YwTvQ+P5Fd8rG77I6et9Pgo=",
+            "type": "github"
+        },
+        "version": "779566f588f0cd9a13e4c78b805e82717c98eff3"
+    }
+}

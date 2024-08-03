@@ -5,45 +5,70 @@
   nodejs,
   tree-sitter,
   lib,
+  nvim-treesitter,
 }: let
+  lang = lib.removePrefix "tree-sitter-" nv.pname;
   location = meta.location or ".";
-  generate = meta.generate or false;
 in
   stdenv.mkDerivation {
-    inherit (nv) pname src;
-    version = nv.date;
+    name = nv.pname;
+    inherit (nv) src;
 
     nativeBuildInputs = [
       tree-sitter
       nodejs
     ];
 
+    unpackPhase = ''
+      runHook preUnpack
+      cp --no-preserve=mode -r $src /build/${nv.pname}
+      cd /build/${nv.pname}
+      runHook postUnpack
+    '';
+
     buildPhase = ''
-      pushd ${location}
+      runHook preBuild
+      export HOME=$PWD
 
-      ${lib.optionalString generate ''
-        tree-sitter generate
-      ''}
+      ${
+        if meta.install_info ? location
+        then "pushd ${meta.install_info.location}"
+        else ""
+      }
 
-      if [[ -f src/scanner.c ]]; then
-        $CC -c -Isrc src/scanner.c -o scanner.o
-      fi
+      ${
+        if meta.install_info ? requires_generate_from_grammar && meta.install_info.requires_generate_from_grammar
+        # if true
+        then ''
+          echo "=> Generating grammar"
+          tree-sitter generate
+        ''
+        else ""
+      }
 
-      $CC -c -Isrc src/parser.c -o parser.o
+      echo "=> Building grammar"
+      tree-sitter build -o ${lib.removePrefix "tree-sitter-" nv.pname}.so
 
-      $CXX -shared *.o -o _parser
-
-      popd
+      runHook postBuild
     '';
 
     installPhase = ''
-      mkdir -p $out
-      cp -v ${location}/_parser $out/parser
+      runHook preInstall
+      mkdir -p $out/parser
+      cp -v *.so $out/parser
 
-      if [[ -d queries ]]; then
-        cp -vr queries $out
-      elif [[ -d ${location}/queries ]]; then
-        cp -vr ${location}/queries $out
+      mkdir -p $out/queries
+
+      if [[ -d ${nvim-treesitter}/queries/${lang} ]]; then
+        cp -vr ${nvim-treesitter}/queries/${lang} $out/queries
       fi
+
+      runHook postInstall
+    '';
+
+    checkPhase = ''
+      runHook preCheck
+      tree-sitter test
+      runHook postCheck
     '';
   }

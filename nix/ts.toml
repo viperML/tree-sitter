@@ -1,0 +1,8 @@
+[nvim-treesitter]
+src.git = "https://github.com/nvim-treesitter/nvim-treesitter"
+fetch.github = "nvim-treesitter/nvim-treesitter"
+
+[tree-sitter]
+src.git = "https://github.com/tree-sitter/tree-sitter"
+fetch.github = "tree-sitter/tree-sitter"
+cargo_locks = ["Cargo.lock"]

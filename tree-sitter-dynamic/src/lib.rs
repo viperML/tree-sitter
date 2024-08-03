@@ -1,8 +1,14 @@
+mod modeline;
+mod path;
+
 use std::{env, fs};
 
 use libloading::{Library, Symbol};
+use path::find_in_path;
 use tree_sitter::Language;
 use tree_sitter_highlight::{HighlightConfiguration, HighlightEvent, Highlighter};
+
+use self::modeline::Modeline;
 
 const BASE: &str = "TS_GRAMMAR_PATH";
 
@@ -28,9 +34,9 @@ impl DynTS {
     {
         let l_name = language.as_ref();
         let grammar_path = env::var(BASE)?;
-        let path_base = std::fs::canonicalize(grammar_path)?.join(format!("tree-sitter-{l_name}"));
 
-        let lib = unsafe { Library::new(path_base.join("parser"))? };
+        let lib =
+            unsafe { Library::new(find_in_path(&grammar_path, format!("parser/{l_name}.so"))?)? };
 
         let symbol_name = format!("tree_sitter_{l_name}");
         let symbol: Symbol<unsafe extern "C" fn() -> Language> =
@@ -38,12 +44,33 @@ impl DynTS {
 
         let language = unsafe { symbol() };
 
-        let highlights = fs::read_to_string(path_base.join("queries").join("highlights.scm"))
+        let mut highlights =
+            find_in_path(&grammar_path, format!("queries/{l_name}/highlights.scm"))
+                .ok()
+                .and_then(|p| fs::read_to_string(p).ok())
+                .unwrap_or_default();
+
+        let injections = find_in_path(&grammar_path, format!("queries/{l_name}/injections.scm"))
+            .ok()
+            .and_then(|p| fs::read_to_string(p).ok())
             .unwrap_or_default();
-        let injections = fs::read_to_string(path_base.join("queries").join("injections.scm"))
+
+        let locals = find_in_path(&grammar_path, format!("queries/{l_name}/locals.scm"))
+            .ok()
+            .and_then(|p| fs::read_to_string(p).ok())
             .unwrap_or_default();
-        let locals =
-            fs::read_to_string(path_base.join("queries").join("locals.scm")).unwrap_or_default();
+
+        let highlights_modeline = Modeline::get(&highlights);
+
+        for sublang in &highlights_modeline.inherits {
+            let subhighlights =
+                find_in_path(&grammar_path, format!("queries/{sublang}/highlights.scm"))
+                    .ok()
+                    .and_then(|p| fs::read_to_string(p).ok())
+                    .unwrap_or_default();
+
+            highlights = [subhighlights, highlights].join("\n");
+        }
 
         let mut config = HighlightConfiguration::new(
             unsafe { symbol() },
