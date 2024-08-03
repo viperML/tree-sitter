@@ -2,8 +2,8 @@
   rustPlatform,
   callPackages,
 }:
-let 
-  nv = (callPackages ./ts/generated.nix {}).tree-sitter;
+let
+  nv = (callPackages ./generated.nix {}).tree-sitter;
 in
 rustPlatform.buildRustPackage {
   pname = "tree-sitter";

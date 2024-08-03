@@ -12,15 +12,47 @@
     default = import ./nix {inherit pkgs;};
     cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
   in {
-    packages.${system} = lib.genAttrs cargoToml.workspace.members (member:
-      pkgs.callPackage ./nix/packages.nix {
-        inherit member;
-      });
+    packages.${system} =
+      (lib.genAttrs cargoToml.workspace.members (member:
+        pkgs.callPackage ./nix/packages.nix {
+          inherit member;
+        }))
+      // {
+        inherit (default) tree-sitter nvim-treesitter;
+
+        # all-grammars = pkgs.linkFarm "all-grammars" (map ({
+        #   name,
+        #   value,
+        # }: {
+        #   inherit name;
+        #   path = value;
+        # }) (lib.attrsToList default.grammars));
+
+        all-grammars = pkgs.linkFarm "all-grammars" ((lib.pipe default.grammars [
+            (lib.flip builtins.removeAttrs [
+              "tree-sitter-norg"
+            ])
+            lib.attrsToList
+            (map ({
+              name,
+              value,
+            }: {
+              inherit name;
+              path = value;
+            }))
+          ])
+          ++ [
+            {
+              name = "nvim-treesitter";
+              path = default.nvim-treesitter;
+            }
+          ]);
+      };
 
     legacyPackages.${system} = {
       grammars = {
         all = default.grammars;
-        filtered = default.filteredGrammars;
+        # filtered = lib.filterAttrs (name: value: true) default.grammars;
       };
     };
   };
