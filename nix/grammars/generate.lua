@@ -38,27 +38,5 @@ end
 
 vim.fn.writefile(vim.fn.split(generated_text, "\n"), "nvfetcher.toml")
 
-local generated_text = ""
----@param v Parser
-for _, v in ipairs(sorted_parsers) do
-  local location = "";
-  if v.parser.install_info.location ~= nil then
-    location = [[location = "]] .. v.parser.install_info.location .. [["]] .. "\n"
-  end
-
-  local generate = ""
-  if v.parser.install_info.requires_generate_from_grammar == true then
-    generate = "generate = true\n"
-  end
-
-  generated_text = generated_text
-    .. "[tree-sitter-" .. v.name .. "]" .. "\n"
-    .. location
-    .. generate
-    .. "\n"
-end
-
-
--- local lock = vim.fn.json_decode(vim.fn.readfile(filename))
 local meta = vim.json.encode(require("nvim-treesitter.parsers").get_parser_configs())
 vim.fn.writefile(vim.fn.split(meta, "\n"), "meta.json")

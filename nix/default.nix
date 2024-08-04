@@ -1,10 +1,7 @@
 {pkgs ? import <nixpkgs> {}}: let
   inherit (builtins) mapAttrs;
-  inherit (pkgs) lib;
 
   grammar-srcs = pkgs.callPackages ./grammars/generated.nix {};
-
-  meta = builtins.fromJSON (builtins.readFile ./grammars/meta.json);
 
   nvim-treesitter = (pkgs.callPackages ./generated.nix {}).nvim-treesitter.src;
 
@@ -13,8 +10,7 @@
   grammars = mapAttrs (name: value:
     pkgs.callPackage ./grammars/grammar.nix {
       nv = value;
-      meta = meta.${lib.removePrefix "tree-sitter-" name};
-      inherit nvim-treesitter tree-sitter;
+      inherit tree-sitter;
     })
   grammar-srcs;
 in {

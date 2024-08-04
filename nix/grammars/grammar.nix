@@ -1,14 +1,12 @@
 {
   nv,
-  meta,
   stdenv,
   nodejs,
   tree-sitter,
   lib,
-  nvim-treesitter,
+  jq,
 }: let
   lang = lib.removePrefix "tree-sitter-" nv.pname;
-  location = meta.location or ".";
 in
   stdenv.mkDerivation {
     name = nv.pname;
@@ -17,6 +15,7 @@ in
     nativeBuildInputs = [
       tree-sitter
       nodejs
+      jq
     ];
 
     unpackPhase = ''
@@ -28,47 +27,41 @@ in
 
     buildPhase = ''
       runHook preBuild
+
       export HOME=$PWD
 
-      ${
-        if meta.install_info ? location
-        then "pushd ${meta.install_info.location}"
-        else ""
-      }
+      export GRAMMAR_LOCATION="$(jq -r '.${lang}.install_info.location' < ${./meta.json})"
+      export GRAMMAR_REQUIRES_GENERATE="$(jq -r '.${lang}.install_info.requires_generate_from_grammar' < ${./meta.json})"
 
-      ${
-        if meta.install_info ? requires_generate_from_grammar && meta.install_info.requires_generate_from_grammar
-        # if true
-        then ''
-          echo "=> Generating grammar"
-          tree-sitter generate
-        ''
-        else ""
-      }
+      if [[ "$GRAMMAR_LOCATION" != "null" ]]; then
+        pushd "$GRAMMAR_LOCATION"
+      fi
+
+      if [[ "$GRAMMAR_REQUIRES_GENERATE" = "true" ]]; then
+        echo "=> Generating grammar"
+        tree-sitter generate
+      fi
 
       echo "=> Building grammar"
-      tree-sitter build -o ${lib.removePrefix "tree-sitter-" nv.pname}.so
+      tree-sitter build -o ${lang}.so
 
       runHook postBuild
     '';
 
     installPhase = ''
       runHook preInstall
+
       mkdir -p $out/parser
       cp -v *.so $out/parser
 
-      mkdir -p $out/queries
-
-      if [[ -d ${nvim-treesitter}/queries/${lang} ]]; then
-        cp -vr ${nvim-treesitter}/queries/${lang} $out/queries
+      if [[ "$GRAMMAR_LOCATION" != "null" ]]; then
+        popd
       fi
 
-      runHook postInstall
-    '';
+      mkdir -p $out/queries
 
-    checkPhase = ''
-      runHook preCheck
-      tree-sitter test
-      runHook postCheck
+      # TODO: install queries by reading the package.json
+
+      runHook postInstall
     '';
   }

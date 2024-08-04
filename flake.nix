@@ -20,14 +20,6 @@
       // {
         inherit (default) tree-sitter nvim-treesitter;
 
-        # all-grammars = pkgs.linkFarm "all-grammars" (map ({
-        #   name,
-        #   value,
-        # }: {
-        #   inherit name;
-        #   path = value;
-        # }) (lib.attrsToList default.grammars));
-
         all-grammars = pkgs.linkFarm "all-grammars" ((lib.pipe default.grammars [
             (lib.flip builtins.removeAttrs [
               "tree-sitter-norg"
