@@ -16,15 +16,12 @@
       (lib.genAttrs cargoToml.workspace.members (member:
         pkgs.callPackage ./nix/packages.nix {
           inherit member;
-          ts-grammar-path = self.packages.${system}.all-grammars;
+          ts-grammar-path = self.packages.${system}.bundle;
         }))
       // {
         inherit (default) tree-sitter nvim-treesitter;
 
-        all-grammars = pkgs.linkFarm "all-grammars" ((lib.pipe default.grammars [
-            (lib.flip builtins.removeAttrs [
-              "tree-sitter-norg"
-            ])
+        bundle = pkgs.linkFarm "tree-sitter-bundle" ((lib.pipe self.legacyPackages.${system}.grammars.filtered [
             lib.attrsToList
             (map ({
               name,
@@ -45,7 +42,7 @@
     legacyPackages.${system} = {
       grammars = {
         all = default.grammars;
-        # filtered = lib.filterAttrs (name: value: true) default.grammars;
+        filtered = builtins.removeAttrs default.grammars ["tree-sitter-norg"];
       };
     };
   };
