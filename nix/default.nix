@@ -3,7 +3,14 @@
 
   grammar-srcs = pkgs.callPackages ./grammars/generated.nix {};
 
-  nvim-treesitter = (pkgs.callPackages ./generated.nix {}).nvim-treesitter.src;
+  nvim-treesitter = let
+    nv = (pkgs.callPackages ./generated.nix {}).nvim-treesitter;
+  in
+  nv.src.overrideAttrs (old: rec {
+      pname = "nvim-treesitter";
+      version = nv.date;
+      name = "${pname}-${version}";
+    });
 
   tree-sitter = pkgs.callPackage ./tree-sitter.nix {};
 
