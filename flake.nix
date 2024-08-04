@@ -16,6 +16,7 @@
       (lib.genAttrs cargoToml.workspace.members (member:
         pkgs.callPackage ./nix/packages.nix {
           inherit member;
+          ts-grammar-path = self.packages.${system}.all-grammars;
         }))
       // {
         inherit (default) tree-sitter nvim-treesitter;

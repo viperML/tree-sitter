@@ -2,6 +2,9 @@
   member,
   rustPlatform,
   lib,
+  makeWrapper,
+
+  ts-grammar-path,
 }: let
   r = ../.;
 
@@ -25,4 +28,15 @@ in
     cargoLock.lockFile = r + "/Cargo.lock";
 
     buildAndTestSubdir = member;
+
+    nativeBuildInputs = [
+      makeWrapper
+    ];
+
+    postInstall = ''
+      for file in $out/bin/*; do
+        wrapProgram $out/bin/* \
+          --set-default TS_GRAMMAR_PATH '${ts-grammar-path}'
+      done
+    '';
   }

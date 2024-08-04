@@ -1,3 +1,4 @@
+use std::fs::ReadDir;
 use std::io::{self, ErrorKind};
 use std::path::{Path, PathBuf};
 
@@ -18,4 +19,49 @@ where
     }
 
     Err(io::Error::from(ErrorKind::NotFound))
+}
+
+pub struct PathResults {
+    bases: Vec<PathBuf>,
+    filename: String,
+    reader: Option<ReadDir>,
+}
+
+#[must_use]
+pub fn in_path<P, S>(base: &[P], filename: S) -> PathResults
+where
+    P: AsRef<Path>,
+    S: AsRef<str>,
+{
+    let bases = base.iter().map(|p| p.as_ref().to_owned()).collect();
+
+    PathResults {
+        bases,
+        filename: filename.as_ref().to_owned(),
+        reader: None,
+    }
+}
+
+impl Iterator for PathResults {
+    type Item = io::Result<PathBuf>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if matches!(self.reader, None) && !self.bases.is_empty() {
+            let next_base = self.bases.pop().unwrap();
+            self.reader = match next_base.read_dir() {
+                Ok(r) => Some(r),
+                Err(e) => return Some(Err(e)),
+            }
+        }
+
+        if matches!(self.reader, None) && self.bases.is_empty() {
+            return None;
+        }
+
+        let reader = self.reader.as_mut().unwrap();
+
+        let next = reader.next();
+
+        todo!()
+    }
 }

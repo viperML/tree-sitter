@@ -9,5 +9,7 @@ color-eyre = "0.6.3"
 eyre = "0.6.12"
 html-escape = "0.2.13"
 itertools = "0.13.0"
+serde = { version = "1.0.204", features = ["derive"] }
+toml = "0.8.19"
 tree-sitter-dynamic = { version = "0.1.0", path = "../tree-sitter-dynamic" }
 tree-sitter-highlight = "0.22.6"
