@@ -3,6 +3,8 @@
   rustPlatform,
   lib,
   makeWrapper,
+  pkg-config,
+  file,
 
   ts-grammar-path,
 }: let
@@ -31,6 +33,11 @@ in
 
     nativeBuildInputs = [
       makeWrapper
+      pkg-config
+    ];
+
+    buildInputs = [
+      file
     ];
 
     postInstall = ''

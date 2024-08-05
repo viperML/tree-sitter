@@ -6,6 +6,7 @@ use std::{
 };
 
 use clap::Parser;
+use eyre::eyre;
 use serde::Deserialize;
 use tree_sitter_dynamic::{DynTS, STANDARD_CAPTURE_NAMES};
 use tree_sitter_highlight::{Highlight, HighlightEvent};
@@ -50,6 +51,15 @@ fn main() -> eyre::Result<()> {
 
     let prefix = &stylesheet.prefix.unwrap_or_default();
     let end = &stylesheet.end.unwrap_or_default();
+
+    let cookie = magic::Cookie::open(magic::cookie::Flags::MIME_ENCODING)?;
+    let database = Default::default();
+    let cookie = cookie.load(&database).unwrap();
+    let file_result = cookie.file(&args.file)?;
+
+    if file_result == "binary" {
+        return Err(eyre::eyre!("Reading binary file, refusing to operate"));
+    }
 
     for event in ts.highlight(&contents) {
         match event.unwrap() {
