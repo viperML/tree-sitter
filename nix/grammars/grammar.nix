@@ -9,18 +9,24 @@
   importNpmLock,
 }: let
   lang = lib.removePrefix "tree-sitter-" nv.pname;
+
+  npmRoot = ./${nv.pname}-${nv.version};
+  useNpm = builtins.pathExists npmRoot;
 in
   stdenv.mkDerivation {
     name = nv.pname;
     inherit (nv) src;
 
-    nativeBuildInputs = [
-      tree-sitter
-      nodejs
-      jq
-      python3
-      importNpmLock.npmConfigHook
-    ];
+    nativeBuildInputs =
+      [
+        tree-sitter
+        nodejs
+        jq
+        python3
+      ]
+      ++ (lib.optionals useNpm [
+        importNpmLock.npmConfigHook
+      ]);
 
     unpackPhase = ''
       runHook preUnpack
@@ -56,9 +62,13 @@ in
       runHook postBuild
     '';
 
-    npmDeps = importNpmLock {
-      npmRoot = ./tree-sitter-tsx-198d03553f43a45b92ac5d0ee167db3fec6a6fd6;
-    };
+    npmDeps =
+      if useNpm
+      then
+        importNpmLock {
+          inherit npmRoot;
+        }
+      else null;
 
     npmRebuildFlags = [
       "--ignore-scripts"

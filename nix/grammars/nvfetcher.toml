@@ -127,7 +127,7 @@ src.manual = "7eb7297823605392d2bbcc4c09b1cd18d6fa9529"
 fetch.git = "https://github.com/amaanq/tree-sitter-csv"
 
 [tree-sitter-cuda]
-src.manual = "07f2f157d484a27dc91c04cc116f94f6fd4fc654"
+src.manual = "7c97acb8398734d790c86210c53c320df61ff66b"
 fetch.git = "https://github.com/theHamsta/tree-sitter-cuda"
 
 [tree-sitter-cue]
@@ -395,7 +395,7 @@ src.manual = "02fa3b79b3ff9a296066da6277adfc3f26cbc9e0"
 fetch.git = "https://github.com/winston0410/tree-sitter-hjson"
 
 [tree-sitter-hlsl]
-src.manual = "80517ca13317fb8591503c0d99f2ad76e8979a72"
+src.manual = "81dbfa44a2e0f9e36d16f449fc792020e2f38426"
 fetch.git = "https://github.com/theHamsta/tree-sitter-hlsl"
 
 [tree-sitter-hlsplaylist]
@@ -499,7 +499,7 @@ src.manual = "b37e3d58e5c5cf8d739b315d6114e02d42e66664"
 fetch.git = "https://github.com/amaanq/tree-sitter-kdl"
 
 [tree-sitter-kotlin]
-src.manual = "754394c69811e5b586f16c462855d66dfc747a03"
+src.manual = "8d9d372b09fa4c3735657c5fc2ad03e53a5f05f5"
 fetch.git = "https://github.com/fwcd/tree-sitter-kotlin"
 
 [tree-sitter-koto]
@@ -879,7 +879,7 @@ src.manual = "c478c6868648eff49eb04a4df90d703dc45b312a"
 fetch.git = "https://github.com/serenadeai/tree-sitter-scss"
 
 [tree-sitter-slang]
-src.manual = "ea77a4d91dd93f4483965efcc41f3faebb9131c8"
+src.manual = "d84b43d75d65bbc4ba57166ce17555f32c0b8983"
 fetch.git = "https://github.com/theHamsta/tree-sitter-slang"
 
 [tree-sitter-slint]
@@ -1033,7 +1033,7 @@ fetch.git = "https://github.com/amaanq/tree-sitter-csv"
 [tree-sitter-tsx]
 src.manual = "198d03553f43a45b92ac5d0ee167db3fec6a6fd6"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-typescript"
-extract = ["package.json", "package-lock.json"]
+extract = ["package.json", "package-lock.json"] 
 
 [tree-sitter-turtle]
 src.manual = "7f789ea7ef765080f71a298fc96b7c957fa24422"
@@ -1046,9 +1046,10 @@ fetch.git = "https://github.com/gbprod/tree-sitter-twig"
 [tree-sitter-typescript]
 src.manual = "198d03553f43a45b92ac5d0ee167db3fec6a6fd6"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-typescript"
+extract = ["package.json", "package-lock.json"] 
 
 [tree-sitter-typespec]
-src.manual = "28821d0d6da5f0a6b5eb02b9bad953fecafd7248"
+src.manual = "af7a97eea5d4c62473b29655a238d4f4e055798b"
 fetch.git = "https://github.com/happenslol/tree-sitter-typespec"
 
 [tree-sitter-typoscript]
@@ -1104,7 +1105,7 @@ src.manual = "90028bbadb267ead5b87830380f6a825147f0c0f"
 fetch.git = "https://github.com/charmbracelet/tree-sitter-vhs"
 
 [tree-sitter-vim]
-src.manual = "b448ca63f972ade12c373c808acdd2bf972937db"
+src.manual = "f3cd62d8bd043ef20507e84bb6b4b53731ccf3a7"
 fetch.git = "https://github.com/neovim/tree-sitter-vim"
 
 [tree-sitter-vimdoc]

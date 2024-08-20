@@ -387,14 +387,14 @@
   };
   tree-sitter-cuda = {
     pname = "tree-sitter-cuda";
-    version = "07f2f157d484a27dc91c04cc116f94f6fd4fc654";
+    version = "7c97acb8398734d790c86210c53c320df61ff66b";
     src = fetchgit {
       url = "https://github.com/theHamsta/tree-sitter-cuda";
-      rev = "07f2f157d484a27dc91c04cc116f94f6fd4fc654";
+      rev = "7c97acb8398734d790c86210c53c320df61ff66b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-GWiSQzMHtXd0EESjC1a0l0O8Q7zx3gjvNy8YZw/U/Bk=";
+      sha256 = "sha256-E5bXdBfCE1lP5GngZBZ4qn9kKPQYVDvdvE5UPMoUsas=";
     };
   };
   tree-sitter-cue = {
@@ -1191,14 +1191,14 @@
   };
   tree-sitter-hlsl = {
     pname = "tree-sitter-hlsl";
-    version = "80517ca13317fb8591503c0d99f2ad76e8979a72";
+    version = "81dbfa44a2e0f9e36d16f449fc792020e2f38426";
     src = fetchgit {
       url = "https://github.com/theHamsta/tree-sitter-hlsl";
-      rev = "80517ca13317fb8591503c0d99f2ad76e8979a72";
+      rev = "81dbfa44a2e0f9e36d16f449fc792020e2f38426";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-3MoTDW0LyZd0wge7R5d+H7QG9zPBykXVE73eJEWMdK8=";
+      sha256 = "sha256-uhCBhS68J6gxWxv/Ehk6OOo3/UMakf9Rrr3JnYAUD/s=";
     };
   };
   tree-sitter-hlsplaylist = {
@@ -1503,14 +1503,14 @@
   };
   tree-sitter-kotlin = {
     pname = "tree-sitter-kotlin";
-    version = "754394c69811e5b586f16c462855d66dfc747a03";
+    version = "8d9d372b09fa4c3735657c5fc2ad03e53a5f05f5";
     src = fetchgit {
       url = "https://github.com/fwcd/tree-sitter-kotlin";
-      rev = "754394c69811e5b586f16c462855d66dfc747a03";
+      rev = "8d9d372b09fa4c3735657c5fc2ad03e53a5f05f5";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-a9f0GaTeHB82nTU2J/DrVBpMCKJ0aHEncQTcE7l/chc=";
+      sha256 = "sha256-uaoFBA8rLhlzmDQ9sCbBU5KRSb63k1DSa6VvmioRSNw=";
     };
   };
   tree-sitter-koto = {
@@ -2643,14 +2643,14 @@
   };
   tree-sitter-slang = {
     pname = "tree-sitter-slang";
-    version = "ea77a4d91dd93f4483965efcc41f3faebb9131c8";
+    version = "d84b43d75d65bbc4ba57166ce17555f32c0b8983";
     src = fetchgit {
       url = "https://github.com/theHamsta/tree-sitter-slang";
-      rev = "ea77a4d91dd93f4483965efcc41f3faebb9131c8";
+      rev = "d84b43d75d65bbc4ba57166ce17555f32c0b8983";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-X+fQoAe9VZekDERw55vz7viXtcVhuZxtAZDYlh4F4Tg=";
+      sha256 = "sha256-KcFntOBXADBu7nSFQ5XVY6/nfSl2uLJfhsfVFFjudd8=";
     };
   };
   tree-sitter-slint = {
@@ -3108,6 +3108,8 @@
       leaveDotGit = false;
       sha256 = "sha256-U597+o8gakd4nU9H2FE2aVhGqSG/eRh6BUhtEmwMzrU=";
     };
+    "package-lock.json" = builtins.readFile ./tree-sitter-tsx-198d03553f43a45b92ac5d0ee167db3fec6a6fd6/package-lock.json;
+    "package.json" = builtins.readFile ./tree-sitter-tsx-198d03553f43a45b92ac5d0ee167db3fec6a6fd6/package.json;
   };
   tree-sitter-turtle = {
     pname = "tree-sitter-turtle";
@@ -3144,17 +3146,19 @@
       leaveDotGit = false;
       sha256 = "sha256-U597+o8gakd4nU9H2FE2aVhGqSG/eRh6BUhtEmwMzrU=";
     };
+    "package-lock.json" = builtins.readFile ./tree-sitter-typescript-198d03553f43a45b92ac5d0ee167db3fec6a6fd6/package-lock.json;
+    "package.json" = builtins.readFile ./tree-sitter-typescript-198d03553f43a45b92ac5d0ee167db3fec6a6fd6/package.json;
   };
   tree-sitter-typespec = {
     pname = "tree-sitter-typespec";
-    version = "28821d0d6da5f0a6b5eb02b9bad953fecafd7248";
+    version = "af7a97eea5d4c62473b29655a238d4f4e055798b";
     src = fetchgit {
       url = "https://github.com/happenslol/tree-sitter-typespec";
-      rev = "28821d0d6da5f0a6b5eb02b9bad953fecafd7248";
+      rev = "af7a97eea5d4c62473b29655a238d4f4e055798b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-MzUcz6vnsakszAMJtTOajniFC72sCREdrMhS/zDa3Ng=";
+      sha256 = "sha256-ZXjsVFwgdBYmIaaAce9HlYa7FKZzKBFZzeVuW21i1/w=";
     };
   };
   tree-sitter-typoscript = {
@@ -3315,14 +3319,14 @@
   };
   tree-sitter-vim = {
     pname = "tree-sitter-vim";
-    version = "b448ca63f972ade12c373c808acdd2bf972937db";
+    version = "f3cd62d8bd043ef20507e84bb6b4b53731ccf3a7";
     src = fetchgit {
       url = "https://github.com/neovim/tree-sitter-vim";
-      rev = "b448ca63f972ade12c373c808acdd2bf972937db";
+      rev = "f3cd62d8bd043ef20507e84bb6b4b53731ccf3a7";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-wQQSeDzcSY9qNVgeDhrELS1x1UoilRa7iHML9qSgchY=";
+      sha256 = "sha256-KVaTJKU7r7zk57Fn9zl5s34oq8tsLkSRV3VHM6Q6F+s=";
     };
   };
   tree-sitter-vimdoc = {

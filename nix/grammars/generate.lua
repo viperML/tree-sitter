@@ -26,6 +26,11 @@ end)
 
 print(vim.inspect(sorted_parsers))
 
+local extract = {
+  ["tsx"] = true,
+  ["typescript"] = true,
+}
+
 local generated_text = ""
 ---@param v Parser
 for _, v in ipairs(sorted_parsers) do
@@ -33,7 +38,13 @@ for _, v in ipairs(sorted_parsers) do
     .. "[tree-sitter-" .. v.name .. "]" .. "\n"
     .. [[src.manual = "]] .. lock[v.name].revision .. [["]] .. "\n"
     .. [[fetch.git = "]] .. v.parser.install_info.url .. [["]] .. "\n"
-    .. "\n"
+
+  if extract[v.name] == true then
+    generated_text = generated_text
+      .. [[extract = ["package.json", "package-lock.json"] ]] .. "\n"
+  end
+
+  generated_text = generated_text .. "\n"
 end
 
 vim.fn.writefile(vim.fn.split(generated_text, "\n"), "nvfetcher.toml")
