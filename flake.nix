@@ -21,29 +21,51 @@
       // {
         inherit (default) tree-sitter nvim-treesitter;
 
-        bundle = pkgs.linkFarm "tree-sitter-bundle" ((lib.pipe self.legacyPackages.${system}.grammars.filtered [
-            lib.attrsToList
-            (map ({
-              name,
-              value,
-            }: {
-              inherit name;
-              path = value;
-            }))
-          ])
-          ++ [
-            {
-              name = "nvim-treesitter";
-              path = default.nvim-treesitter;
-            }
-          ]);
+        bundle = pkgs.linkFarmFromDrvs "tree-sitter-bundle" (lib.flatten [
+          (builtins.attrValues self.legacyPackages.${system}.grammars.filtered)
+          default.nvim-treesitter
+        ]);
+
+        bundle-dev = pkgs.linkFarmFromDrvs "tree-sitter-bundle" (builtins.attrValues self.legacyPackages.${system}.grammars.dev);
       };
 
     legacyPackages.${system} = {
       grammars = {
         all = default.grammars;
         filtered = builtins.removeAttrs default.grammars ["tree-sitter-norg"];
+        # Selection of grammars with quirks
+        dev =
+          lib.getAttrs (map (n: "tree-sitter-${n}") [
+            "javascript"
+            "nix"
+            "latex"
+            "php"
+            "php_only"
+            "typescript"
+            "tsx"
+          ])
+          default.grammars;
       };
+    };
+
+    devShells.${system}.default = pkgs.mkShell {
+      packages = [
+        pkgs.cargo
+        pkgs.rustc
+        pkgs.rust-analyzer
+        pkgs.rustfmt
+        pkgs.clippy
+        pkgs.gdb
+        pkgs.pkg-config
+        pkgs.file
+
+        self.packages.${system}.tree-sitter
+        (pkgs.python3.withPackages (p: [
+          p.python-lsp-server
+        ]))
+        pkgs.ruff
+      ];
+      env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
     };
   };
 }

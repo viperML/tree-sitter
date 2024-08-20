@@ -5,6 +5,7 @@
   tree-sitter,
   lib,
   jq,
+  python3,
 }: let
   lang = lib.removePrefix "tree-sitter-" nv.pname;
 in
@@ -16,12 +17,17 @@ in
       tree-sitter
       nodejs
       jq
+      python3
     ];
 
     unpackPhase = ''
       runHook preUnpack
+
+      # tree-sitter checks for the name of the directory
+      # (wtf??)
       cp --no-preserve=mode -r $src /build/${nv.pname}
       cd /build/${nv.pname}
+
       runHook postUnpack
     '';
 
@@ -52,15 +58,19 @@ in
       runHook preInstall
 
       mkdir -p $out/parser
-      cp -v *.so $out/parser
+      for file in *.so; do
+        cp -v "$file" $out
+        # compatibility with nvim-treesitter
+        ln -vsfT "../$file" "$out/parser/$file"
+      done
 
       if [[ "$GRAMMAR_LOCATION" != "null" ]]; then
         popd
       fi
 
-      mkdir -p $out/queries
+      python3 ${./install.py}
 
-      # TODO: install queries by reading the package.json
+      cp package.json $out
 
       runHook postInstall
     '';
