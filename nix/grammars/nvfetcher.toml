@@ -1033,6 +1033,7 @@ fetch.git = "https://github.com/amaanq/tree-sitter-csv"
 [tree-sitter-tsx]
 src.manual = "198d03553f43a45b92ac5d0ee167db3fec6a6fd6"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-typescript"
+extract = ["package.json", "package-lock.json"]
 
 [tree-sitter-turtle]
 src.manual = "7f789ea7ef765080f71a298fc96b7c957fa24422"

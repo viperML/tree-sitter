@@ -1,11 +1,12 @@
 {
   nv,
   stdenv,
-  nodejs,
   tree-sitter,
   lib,
   jq,
   python3,
+  nodejs,
+  importNpmLock,
 }: let
   lang = lib.removePrefix "tree-sitter-" nv.pname;
 in
@@ -18,6 +19,7 @@ in
       nodejs
       jq
       python3
+      importNpmLock.npmConfigHook
     ];
 
     unpackPhase = ''
@@ -53,6 +55,14 @@ in
 
       runHook postBuild
     '';
+
+    npmDeps = importNpmLock {
+      npmRoot = ./tree-sitter-tsx-198d03553f43a45b92ac5d0ee167db3fec6a6fd6;
+    };
+
+    npmRebuildFlags = [
+      "--ignore-scripts"
+    ];
 
     installPhase = ''
       runHook preInstall
