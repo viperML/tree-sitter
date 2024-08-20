@@ -32,7 +32,24 @@
     legacyPackages.${system} = {
       grammars = {
         all = default.grammars;
-        filtered = builtins.removeAttrs default.grammars ["tree-sitter-norg"];
+        filtered = builtins.removeAttrs default.grammars [
+          "tree-sitter-norg"
+          # "tree-sitter-apex"
+          "tree-sitter-cuda"
+          "tree-sitter-csv"
+          "tree-sitter-psv"
+          "tree-sitter-tsv"
+          "tree-sitter-ebnf" # in subdir
+          "tree-sitter-markdown"
+          "tree-sitter-markdown_inline"
+          "tree-sitter-perl" # wtf
+          "tree-sitter-pod" # same repo
+          "tree-sitter-promql"
+          "tree-sitter-sxhkdrc"
+          "tree-sitter-styled"
+          "tree-sitter-v"
+          "tree-sitter-sql"
+        ];
         # Selection of grammars with quirks
         dev =
           lib.getAttrs (map (n: "tree-sitter-${n}") [
@@ -43,6 +60,7 @@
             "php_only"
             "typescript"
             "tsx"
+            "csv"
           ])
           default.grammars;
       };

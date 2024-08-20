@@ -360,6 +360,8 @@
       leaveDotGit = false;
       sha256 = "sha256-z2cG/woWbpvLJdmlN7ZuPiDwWhHnmwr3speMDFz3cEk=";
     };
+    "package-lock.json" = builtins.readFile ./tree-sitter-cpp-0b4aa47f07d958a49260aadc87e8474b03897c23/package-lock.json;
+    "package.json" = builtins.readFile ./tree-sitter-cpp-0b4aa47f07d958a49260aadc87e8474b03897c23/package.json;
   };
   tree-sitter-css = {
     pname = "tree-sitter-css";
@@ -2352,6 +2354,8 @@
       leaveDotGit = false;
       sha256 = "sha256-bRb5h6gBBxbzhxpCxJK8CsQ5BCtPTuKtuZesE/+mDY0=";
     };
+    "package-lock.json" = builtins.readFile ./tree-sitter-qmljs-febf48a5b6928600cd8fb2a01254743af550780d/package-lock.json;
+    "package.json" = builtins.readFile ./tree-sitter-qmljs-febf48a5b6928600cd8fb2a01254743af550780d/package.json;
   };
   tree-sitter-query = {
     pname = "tree-sitter-query";

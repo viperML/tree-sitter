@@ -29,6 +29,8 @@ print(vim.inspect(sorted_parsers))
 local extract = {
   ["tsx"] = true,
   ["typescript"] = true,
+  ["cpp"] = true,
+  ["qmljs"] = true,
 }
 
 local generated_text = ""
@@ -41,7 +43,7 @@ for _, v in ipairs(sorted_parsers) do
 
   if extract[v.name] == true then
     generated_text = generated_text
-      .. [[extract = ["package.json", "package-lock.json"] ]] .. "\n"
+      .. "extract = [\"package.json\", \"package-lock.json\"]" .. "\n"
   end
 
   generated_text = generated_text .. "\n"

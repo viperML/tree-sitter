@@ -553,7 +553,10 @@
     "tree-sitter-cpp": {
         "cargoLocks": null,
         "date": null,
-        "extract": null,
+        "extract": {
+            "package-lock.json": "./tree-sitter-cpp-0b4aa47f07d958a49260aadc87e8474b03897c23/package-lock.json",
+            "package.json": "./tree-sitter-cpp-0b4aa47f07d958a49260aadc87e8474b03897c23/package.json"
+        },
         "name": "tree-sitter-cpp",
         "passthru": null,
         "pinned": false,
@@ -3707,7 +3710,10 @@
     "tree-sitter-qmljs": {
         "cargoLocks": null,
         "date": null,
-        "extract": null,
+        "extract": {
+            "package-lock.json": "./tree-sitter-qmljs-febf48a5b6928600cd8fb2a01254743af550780d/package-lock.json",
+            "package.json": "./tree-sitter-qmljs-febf48a5b6928600cd8fb2a01254743af550780d/package.json"
+        },
         "name": "tree-sitter-qmljs",
         "passthru": null,
         "pinned": false,

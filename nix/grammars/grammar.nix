@@ -28,6 +28,8 @@ in
         importNpmLock.npmConfigHook
       ]);
 
+    inherit useNpm;
+
     unpackPhase = ''
       runHook preUnpack
 
@@ -35,6 +37,8 @@ in
       # (wtf??)
       cp --no-preserve=mode -r $src /build/${nv.pname}
       cd /build/${nv.pname}
+
+      echo "=> useNpm: $useNpm"
 
       runHook postUnpack
     '';

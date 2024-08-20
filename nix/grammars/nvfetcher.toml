@@ -117,6 +117,7 @@ fetch.git = "https://github.com/amaanq/tree-sitter-cpon"
 [tree-sitter-cpp]
 src.manual = "0b4aa47f07d958a49260aadc87e8474b03897c23"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-cpp"
+extract = ["package.json", "package-lock.json"]
 
 [tree-sitter-css]
 src.manual = "f6be52c3d1cdb1c5e4dd7d8bce0a57497f55d6af"
@@ -781,6 +782,7 @@ fetch.git = "https://github.com/Decodetalkers/tree-sitter-qmldir"
 [tree-sitter-qmljs]
 src.manual = "febf48a5b6928600cd8fb2a01254743af550780d"
 fetch.git = "https://github.com/yuja/tree-sitter-qmljs"
+extract = ["package.json", "package-lock.json"]
 
 [tree-sitter-query]
 src.manual = "f767fb0ac5e711b6d44c5e0c8d1f349687a86ce0"
@@ -1033,7 +1035,7 @@ fetch.git = "https://github.com/amaanq/tree-sitter-csv"
 [tree-sitter-tsx]
 src.manual = "198d03553f43a45b92ac5d0ee167db3fec6a6fd6"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-typescript"
-extract = ["package.json", "package-lock.json"] 
+extract = ["package.json", "package-lock.json"]
 
 [tree-sitter-turtle]
 src.manual = "7f789ea7ef765080f71a298fc96b7c957fa24422"
@@ -1046,7 +1048,7 @@ fetch.git = "https://github.com/gbprod/tree-sitter-twig"
 [tree-sitter-typescript]
 src.manual = "198d03553f43a45b92ac5d0ee167db3fec6a6fd6"
 fetch.git = "https://github.com/tree-sitter/tree-sitter-typescript"
-extract = ["package.json", "package-lock.json"] 
+extract = ["package.json", "package-lock.json"]
 
 [tree-sitter-typespec]
 src.manual = "af7a97eea5d4c62473b29655a238d4f4e055798b"
