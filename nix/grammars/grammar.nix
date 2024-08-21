@@ -9,6 +9,7 @@
   importNpmLock,
 }: let
   lang = lib.removePrefix "tree-sitter-" nv.pname;
+  repoName = builtins.baseNameOf nv.src.url;
 
   npmRoot = ./${nv.pname}-${nv.version};
   useNpm = builtins.pathExists npmRoot;
@@ -35,8 +36,9 @@ in
 
       # tree-sitter checks for the name of the directory
       # (wtf??)
-      cp --no-preserve=mode -r $src /build/${nv.pname}
-      cd /build/${nv.pname}
+      cp --no-preserve=mode -r $src /build/${repoName}
+      cd /build/${repoName}
+      echo "=> Working in $PWD"
 
       echo "=> useNpm: $useNpm"
 
@@ -51,9 +53,11 @@ in
       export GRAMMAR_LOCATION="$(jq -r '.${lang}.install_info.location' < ${./meta.json})"
       export GRAMMAR_REQUIRES_GENERATE="$(jq -r '.${lang}.install_info.requires_generate_from_grammar' < ${./meta.json})"
 
-      if [[ "$GRAMMAR_LOCATION" != "null" ]]; then
-        pushd "$GRAMMAR_LOCATION"
+      if [[ "$GRAMMAR_LOCATION" == "null" ]]; then
+        GRAMMAR_LOCATION=""
       fi
+
+      pushd "$GRAMMAR_LOCATION"
 
       if [[ "$GRAMMAR_REQUIRES_GENERATE" = "true" ]]; then
         echo "=> Generating grammar"
@@ -61,7 +65,7 @@ in
       fi
 
       echo "=> Building grammar"
-      tree-sitter build -o ${lang}.so
+      tree-sitter build
 
       runHook postBuild
     '';
@@ -81,9 +85,9 @@ in
     installPhase = ''
       runHook preInstall
 
-      mkdir -p $out/parser
+      mkdir -p $out/$GRAMMAR_LOCATION
       for file in *.so; do
-        cp -v "$file" $out
+        cp -v "$file" $out/$GRAMMAR_LOCATION
       done
 
       if [[ "$GRAMMAR_LOCATION" != "null" ]]; then

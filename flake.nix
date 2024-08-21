@@ -87,6 +87,7 @@
             "php_only"
             "typescript"
             "tsx"
+            "rust"
             # "csv"
           ])
           default.grammars;
@@ -103,6 +104,7 @@
         pkgs.gdb
         pkgs.pkg-config
         pkgs.file
+        pkgs.nodejs
 
         self.packages.${system}.tree-sitter
         (pkgs.python3.withPackages (p: [
