@@ -1,13 +1,11 @@
 use core::str;
 use std::{
     collections::HashMap,
-    env,
     fs::{self},
     path::PathBuf,
 };
 
 use clap::Parser;
-use eyre::eyre;
 use serde::Deserialize;
 use tree_sitter_dynamic::{DynTS, STANDARD_CAPTURE_NAMES};
 use tree_sitter_highlight::{Highlight, HighlightEvent};

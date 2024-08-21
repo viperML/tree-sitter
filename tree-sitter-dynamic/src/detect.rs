@@ -43,5 +43,5 @@ where
         }
     }
 
-    return Err(eyre!("Could not find language for .{extension}"));
+    Err(eyre!("Could not find language for .{extension}"))
 }

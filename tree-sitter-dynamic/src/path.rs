@@ -46,7 +46,7 @@ impl Iterator for PathResults {
     type Item = io::Result<PathBuf>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if matches!(self.reader, None) && !self.bases.is_empty() {
+        if self.reader.is_none() && !self.bases.is_empty() {
             let next_base = self.bases.pop().unwrap();
             self.reader = match next_base.read_dir() {
                 Ok(r) => Some(r),
@@ -54,7 +54,7 @@ impl Iterator for PathResults {
             }
         }
 
-        if matches!(self.reader, None) && self.bases.is_empty() {
+        if self.reader.is_none() && self.bases.is_empty() {
             return None;
         }
 

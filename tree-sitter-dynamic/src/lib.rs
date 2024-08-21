@@ -6,15 +6,13 @@ use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::{env, fs};
 
-use eyre::{bail, eyre};
+use eyre::eyre;
 use libloading::{Library, Symbol};
-use path::find_in_path;
 use serde::Deserialize;
 use serde_with::serde_as;
 use tree_sitter::Language;
 use tree_sitter_highlight::{HighlightConfiguration, HighlightEvent, Highlighter};
 
-use self::modeline::Modeline;
 use serde_with::formats::PreferMany;
 use serde_with::OneOrMany;
 
@@ -136,7 +134,7 @@ where
         }
     }
 
-    return Err(eyre!("Couldn't find language {language}"));
+    Err(eyre!("Couldn't find language {language}"))
 }
 
 impl DynTS {

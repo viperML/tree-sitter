@@ -1,24 +1,22 @@
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Modeline {
     pub inherits: Vec<String>,
-    pub extends: bool
+    pub extends: bool,
 }
-
 
 impl Modeline {
     pub fn get(source: &str) -> Self {
         let mut inherits = Vec::new();
 
         for line in source.lines() {
-            if ! line.starts_with(";") {
+            if !line.starts_with(';') {
                 break;
             }
 
-            let trimmed = line.replace(";", "").trim().to_owned();
+            let trimmed = line.replace(';', "").trim().to_owned();
 
             if trimmed.starts_with("inherits: ") {
-                for lang in trimmed.replace("inherits:", "").trim().split(",") {
+                for lang in trimmed.replace("inherits:", "").trim().split(',') {
                     inherits.push(String::from(lang.trim()));
                 }
             }
