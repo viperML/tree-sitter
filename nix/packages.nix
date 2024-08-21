@@ -6,7 +6,7 @@
   pkg-config,
   file,
 
-  ts-grammar-path,
+  tsGrammarPath,
 }: let
   r = ../.;
 
@@ -43,7 +43,7 @@ in
     postInstall = ''
       for file in $out/bin/*; do
         wrapProgram $out/bin/* \
-          --set-default TS_GRAMMAR_PATH '${ts-grammar-path}'
+          --set-default TS_GRAMMAR_PATH '${tsGrammarPath}'
       done
     '';
   }

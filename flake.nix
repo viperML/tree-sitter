@@ -1,121 +1,54 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
-
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    inherit (pkgs) lib;
-
-    default = import ./nix {inherit pkgs;};
-    cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
-  in {
-    packages.${system} =
-      (lib.genAttrs cargoToml.workspace.members (member:
-        pkgs.callPackage ./nix/packages.nix {
-          inherit member;
-          ts-grammar-path = self.packages.${system}.bundle;
-        }))
-      // {
-        inherit (default) tree-sitter nvim-treesitter;
-
-        bundle = pkgs.linkFarmFromDrvs "tree-sitter-bundle" (lib.flatten [
-          (builtins.attrValues self.legacyPackages.${system}.grammars.filtered)
-          default.nvim-treesitter
-        ]);
-
-        bundle-dev = pkgs.linkFarmFromDrvs "tree-sitter-bundle" (builtins.attrValues self.legacyPackages.${system}.grammars.dev);
-      };
-
-    legacyPackages.${system} = {
-      grammars = {
-        all = default.grammars;
-        filtered = builtins.removeAttrs default.grammars (map (n: "tree-sitter-${n}") [
-          "norg"
-          # "apex"
-          "cuda"
-          "csv"
-          "psv"
-          "tsv"
-          "elvish"
-          "gowork"
-          "gomod"
-          "ebnf" # in subdir
-          "markdown"
-          "markdown_inline"
-          "perl" # wtf
-          "pod" # same repo
-          "promql"
-          "sxhkdrc"
-          "styled"
-          "v"
-          "sql"
-          "graphql"
-          "hjson"
-          "glimmer"
-          "regex"
-          "pioasm"
-          "prisma"
-          "surface"
-          "gdscript"
-          "yang"
-          "json5"
-          "org"
-          "groovy"
-          "godot_resource"
-          "haskell_persistent"
-          "jq"
-          "prql"
-          "menhir"
-          "liquid"
-          "htmldjango"
-          "rnoweb"
-          "nim_format_string"
-          "kusto"
-          "jsonc"
-          "passwd"
-        ]);
-        # Selection of grammars with quirks or that are important to me
-        dev =
-          lib.getAttrs (map (n: "tree-sitter-${n}") [
-            "javascript"
-            "nix"
-            "latex"
-            "php"
-            "php_only"
-            "typescript"
-            "tsx"
-            "rust"
-            # "csv"
-            "json"
-            "toml"
-            "lua"
-          ])
-          default.grammars;
-      };
-    };
-
-    devShells.${system}.default = pkgs.mkShell {
-      packages = [
-        pkgs.cargo
-        pkgs.rustc
-        pkgs.rust-analyzer
-        pkgs.rustfmt
-        pkgs.clippy
-        pkgs.gdb
-        pkgs.pkg-config
-        pkgs.file
-        pkgs.nodejs
-
-        self.packages.${system}.tree-sitter
-        (pkgs.python3.withPackages (p: [
-          p.python-lsp-server
-        ]))
-        pkgs.ruff
-      ];
-      env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
   };
+
+  outputs = inputs @ {
+    nixpkgs,
+    flake-parts,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} ({lib, ...}: {
+      systems = [
+        "x86_64-linux"
+      ];
+
+      perSystem = {
+        pkgs,
+        config,
+        ...
+      }: let
+        result = import ./nix {inherit pkgs;};
+      in {
+        packages = lib.filterAttrs (_: lib.isDerivation) result;
+
+        legacyPackages = {
+          inherit (result) grammars nvim-grammars;
+        };
+
+        devShells.default = with pkgs;
+          mkShell {
+            packages = [
+              cargo
+              rustc
+              rust-analyzer
+              rustfmt
+              clippy
+              pkg-config
+              file
+              nodejs
+              config.packages.tree-sitter
+              (python3.withPackages (pp: [
+                pp.python-lsp-server
+              ]))
+              ruff
+            ];
+            env.RUST_SRC_PATH = "${rustPlatform.rustLibSrc}";
+          };
+      };
+    });
 }
