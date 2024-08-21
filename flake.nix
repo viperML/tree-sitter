@@ -77,7 +77,7 @@
           "jsonc"
           "passwd"
         ]);
-        # Selection of grammars with quirks
+        # Selection of grammars with quirks or that are important to me
         dev =
           lib.getAttrs (map (n: "tree-sitter-${n}") [
             "javascript"
@@ -89,6 +89,8 @@
             "tsx"
             "rust"
             # "csv"
+            "json"
+            "toml"
           ])
           default.grammars;
       };
