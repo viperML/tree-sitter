@@ -84,8 +84,6 @@ in
       mkdir -p $out/parser
       for file in *.so; do
         cp -v "$file" $out
-        # compatibility with nvim-treesitter
-        ln -vsfT "../$file" "$out/parser/$file"
       done
 
       if [[ "$GRAMMAR_LOCATION" != "null" ]]; then
