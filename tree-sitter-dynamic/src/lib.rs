@@ -1,14 +1,21 @@
 mod modeline;
 mod path;
 
+use std::fs::File;
+use std::path::{Path, PathBuf};
 use std::{env, fs};
 
+use eyre::{bail, eyre};
 use libloading::{Library, Symbol};
 use path::find_in_path;
+use serde::Deserialize;
+use serde_with::serde_as;
 use tree_sitter::Language;
 use tree_sitter_highlight::{HighlightConfiguration, HighlightEvent, Highlighter};
 
 use self::modeline::Modeline;
+use serde_with::formats::PreferMany;
+use serde_with::OneOrMany;
 
 const BASE: &str = "TS_GRAMMAR_PATH";
 
@@ -27,55 +34,105 @@ pub struct Highlights<'a> {
     iter: Box<dyn Iterator<Item = It> + 'a>,
 }
 
+#[derive(Debug, Deserialize)]
+struct PackageJson {
+    #[serde(rename = "tree-sitter")]
+    tree_sitter: Vec<TreeSitterConfig>,
+}
+
+#[serde_as]
+#[derive(Debug, Deserialize)]
+struct TreeSitterConfig {
+    path: Option<PathBuf>,
+    #[serde(default)]
+    #[serde_as(as = "OneOrMany<_, PreferMany>")]
+    highlights: Vec<PathBuf>,
+}
+
+#[derive(Debug)]
+struct Grammar {
+    parser: PathBuf,
+    highlights: String,
+}
+
+/// The weird grammar lookup from tree-sitter upstream
+fn find_grammar<S, P>(language: S, ts_grammar_path: P) -> eyre::Result<Grammar>
+where
+    S: AsRef<str>,
+    P: AsRef<Path>,
+{
+    let language = language.as_ref();
+
+    for grammar in fs::read_dir(ts_grammar_path)? {
+        let grammar = grammar?.path();
+
+        let package_json = grammar.join("package.json");
+
+        if let Ok(file) = File::open(package_json) {
+            let parsed: PackageJson = serde_json::from_reader(file)?;
+
+            for config in parsed.tree_sitter {
+                let this_language: String = match &config.path {
+                    Some(p) => p.file_name().unwrap().to_os_string().into_string().unwrap(),
+                    None => grammar
+                        .file_name()
+                        .unwrap()
+                        .to_owned()
+                        .into_string()
+                        .unwrap()
+                        .strip_prefix("tree-sitter-")
+                        .unwrap()
+                        .to_owned(),
+                };
+
+                let parser: PathBuf = match &config.path {
+                    Some(p) => grammar.join(p).join("parser.so"),
+                    None => grammar.join(format!("{this_language}.so")),
+                };
+
+                if !(language == this_language && parser.exists()) {
+                    continue;
+                }
+
+                let mut highlights = String::new();
+                for relpath in config.highlights {
+                    let path = grammar.join(relpath);
+                    highlights.push_str(&fs::read_to_string(path)?);
+                }
+
+                return Ok(Grammar { parser, highlights });
+            }
+        }
+    }
+
+    return Err(eyre!("Couldn't find language {language}"));
+}
+
 impl DynTS {
     pub fn new<S>(language: S, recognized_names: &[impl AsRef<str>]) -> eyre::Result<Self>
     where
         S: AsRef<str>,
     {
-        let l_name = language.as_ref();
-        let grammar_path = env::var(BASE)?;
+        let language = language.as_ref();
+        let ts_grammar_path = env::var(BASE)?;
 
-        let lib =
-            unsafe { Library::new(find_in_path(&grammar_path, format!("parser/{l_name}.so"))?)? };
+        let grammar = find_grammar(language, ts_grammar_path)?;
 
-        let symbol_name = format!("tree_sitter_{l_name}");
+        let lib = unsafe { Library::new(&grammar.parser)? };
+
+        let symbol_name = format!("tree_sitter_{language}");
         let symbol: Symbol<unsafe extern "C" fn() -> Language> =
             unsafe { lib.get(symbol_name.as_bytes())? };
 
-        let language = unsafe { symbol() };
+        let ts_language = unsafe { symbol() };
 
-        let mut highlights =
-            find_in_path(&grammar_path, format!("queries/{l_name}/highlights.scm"))
-                .ok()
-                .and_then(|p| fs::read_to_string(p).ok())
-                .unwrap_or_default();
-
-        let injections = find_in_path(&grammar_path, format!("queries/{l_name}/injections.scm"))
-            .ok()
-            .and_then(|p| fs::read_to_string(p).ok())
-            .unwrap_or_default();
-
-        let locals = find_in_path(&grammar_path, format!("queries/{l_name}/locals.scm"))
-            .ok()
-            .and_then(|p| fs::read_to_string(p).ok())
-            .unwrap_or_default();
-
-        let highlights_modeline = Modeline::get(&highlights);
-
-        for sublang in &highlights_modeline.inherits {
-            let subhighlights =
-                find_in_path(&grammar_path, format!("queries/{sublang}/highlights.scm"))
-                    .ok()
-                    .and_then(|p| fs::read_to_string(p).ok())
-                    .unwrap_or_default();
-
-            highlights = [subhighlights, highlights].join("\n");
-        }
+        let injections = String::new();
+        let locals = String::new();
 
         let mut config = HighlightConfiguration::new(
             unsafe { symbol() },
-            l_name,
-            &highlights,
+            language,
+            &grammar.highlights,
             &injections,
             &locals,
         )?;
@@ -84,7 +141,7 @@ impl DynTS {
 
         Ok(DynTS {
             _lib: lib,
-            language,
+            language: ts_language ,
             highlight_config: config,
             highlighter: Highlighter::new(),
             recognized_names: recognized_names
