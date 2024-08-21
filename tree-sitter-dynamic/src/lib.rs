@@ -1,5 +1,6 @@
 mod modeline;
 mod path;
+mod detect;
 
 use std::fs::File;
 use std::path::{Path, PathBuf};
@@ -17,6 +18,8 @@ use self::modeline::Modeline;
 use serde_with::formats::PreferMany;
 use serde_with::OneOrMany;
 
+pub use detect::detect_language;
+
 const BASE: &str = "TS_GRAMMAR_PATH";
 
 pub struct DynTS {
@@ -25,7 +28,7 @@ pub struct DynTS {
     highlight_config: HighlightConfiguration,
     highlighter: Highlighter,
 
-    recognized_names: Vec<String>,
+    capture_names: Vec<String>,
 }
 
 type It = Result<HighlightEvent, tree_sitter_highlight::Error>;
@@ -47,6 +50,9 @@ struct TreeSitterConfig {
     #[serde(default)]
     #[serde_as(as = "OneOrMany<_, PreferMany>")]
     highlights: Vec<PathBuf>,
+    #[serde(default, rename = "file-types")]
+    #[serde_as(as = "OneOrMany<_, PreferMany>")]
+    file_types: Vec<String>
 }
 
 #[derive(Debug)]
@@ -109,7 +115,7 @@ where
 }
 
 impl DynTS {
-    pub fn new<S>(language: S, recognized_names: &[impl AsRef<str>]) -> eyre::Result<Self>
+    pub fn new<S>(language: S, capture_names: &[impl AsRef<str>]) -> eyre::Result<Self>
     where
         S: AsRef<str>,
     {
@@ -137,14 +143,14 @@ impl DynTS {
             &locals,
         )?;
 
-        config.configure(recognized_names);
+        config.configure(capture_names);
 
         Ok(DynTS {
             _lib: lib,
             language: ts_language ,
             highlight_config: config,
             highlighter: Highlighter::new(),
-            recognized_names: recognized_names
+            capture_names: capture_names
                 .iter()
                 .map(|s| String::from(s.as_ref()))
                 .collect(),
@@ -163,7 +169,8 @@ impl DynTS {
     where
         'so: 'se,
     {
-        let s: Vec<_> = self.recognized_names.iter().map(|s| s.as_str()).collect();
+        // FIXME: hack to pass down the capture names
+        let s: Vec<_> = self.capture_names.iter().map(|s| s.as_str()).collect();
 
         let iter = self
             .highlighter
@@ -187,12 +194,6 @@ impl<'a> Iterator for Highlights<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next()
     }
-}
-
-#[test]
-fn test_path() {
-    let ts = DynTS::new("javascript", &["attribute"]).unwrap();
-    _ = ts.language.version();
 }
 
 pub const STANDARD_CAPTURE_NAMES: &[&str] = &[

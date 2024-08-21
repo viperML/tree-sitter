@@ -1,6 +1,7 @@
 use core::str;
 use std::{
     collections::HashMap,
+    env,
     fs::{self},
     path::PathBuf,
 };
@@ -14,10 +15,12 @@ use tree_sitter_highlight::{Highlight, HighlightEvent};
 #[derive(Debug, Parser)]
 /// treesitter-powered cat clone
 struct Args {
-    /// Which language the source code is written in
-    language: String,
     /// File to colorize
     file: PathBuf,
+
+    /// Which language the source code is written in
+    #[arg(short, long)]
+    language: Option<String>,
 
     #[arg(long, short)]
     /// Output information about the tree-sitter highlights
@@ -40,7 +43,16 @@ struct StyleSheet {
 fn main() -> eyre::Result<()> {
     color_eyre::install()?;
     let args = Args::parse();
-    let mut ts = DynTS::new(&args.language, STANDARD_CAPTURE_NAMES)?;
+
+    let language = match args.language {
+        Some(l) => l,
+        None => tree_sitter_dynamic::detect_language(
+            std::env::var("TS_GRAMMAR_PATH")?,
+            args.file.as_path(),
+        )?,
+    };
+
+    let mut ts = DynTS::new(language, STANDARD_CAPTURE_NAMES)?;
 
     let contents = fs::read(&args.file)?;
 
