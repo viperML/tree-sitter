@@ -91,6 +91,7 @@
             # "csv"
             "json"
             "toml"
+            "lua"
           ])
           default.grammars;
       };

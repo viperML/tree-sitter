@@ -1,6 +1,6 @@
+mod detect;
 mod modeline;
 mod path;
-mod detect;
 
 use std::fs::File;
 use std::path::{Path, PathBuf};
@@ -43,6 +43,8 @@ struct PackageJson {
     tree_sitter: Vec<TreeSitterConfig>,
 }
 
+// TODO: implement default path
+
 #[serde_as]
 #[derive(Debug, Deserialize)]
 struct TreeSitterConfig {
@@ -50,15 +52,23 @@ struct TreeSitterConfig {
     #[serde(default)]
     #[serde_as(as = "OneOrMany<_, PreferMany>")]
     highlights: Vec<PathBuf>,
+    #[serde(default)]
+    #[serde_as(as = "OneOrMany<_, PreferMany>")]
+    injections: Vec<PathBuf>,
+    #[serde(default)]
+    #[serde_as(as = "OneOrMany<_, PreferMany>")]
+    locals: Vec<PathBuf>,
     #[serde(default, rename = "file-types")]
     #[serde_as(as = "OneOrMany<_, PreferMany>")]
-    file_types: Vec<String>
+    file_types: Vec<String>,
 }
 
 #[derive(Debug)]
 struct Grammar {
     parser: PathBuf,
     highlights: String,
+    locals: String,
+    injections: String,
 }
 
 /// The weird grammar lookup from tree-sitter upstream
@@ -106,7 +116,22 @@ where
                     highlights.push_str(&fs::read_to_string(path)?);
                 }
 
-                return Ok(Grammar { parser, highlights });
+                let mut injections = String::new();
+                for relpath in config.injections {
+                    injections.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                }
+
+                let mut locals = String::new();
+                for relpath in config.locals {
+                    locals.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                }
+
+                return Ok(Grammar {
+                    parser,
+                    highlights,
+                    injections,
+                    locals,
+                });
             }
         }
     }
@@ -132,22 +157,19 @@ impl DynTS {
 
         let ts_language = unsafe { symbol() };
 
-        let injections = String::new();
-        let locals = String::new();
-
         let mut config = HighlightConfiguration::new(
             unsafe { symbol() },
             language,
             &grammar.highlights,
-            &injections,
-            &locals,
+            &grammar.injections,
+            &grammar.locals,
         )?;
 
         config.configure(capture_names);
 
         Ok(DynTS {
             _lib: lib,
-            language: ts_language ,
+            language: ts_language,
             highlight_config: config,
             highlighter: Highlighter::new(),
             capture_names: capture_names
