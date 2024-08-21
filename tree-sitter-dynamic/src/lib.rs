@@ -109,27 +109,50 @@ where
                 }
 
                 let mut highlights = String::new();
-                for relpath in config.highlights {
-                    let path = grammar.join(relpath);
-                    highlights.push_str(&fs::read_to_string(path)?);
+                if config.highlights.is_empty() {
+                    let path = grammar.join("queries/highlights.scm");
+                    if let Ok(contents) = fs::read_to_string(path) {
+                        highlights.push_str(&contents);
+                    }
+                } else {
+                    for relpath in config.highlights {
+                        let path = grammar.join(relpath);
+                        highlights.push_str(&fs::read_to_string(path)?);
+                    }
                 }
 
                 let mut injections = String::new();
-                for relpath in config.injections {
-                    injections.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                if config.injections.is_empty() {
+                    let path = grammar.join("queries/injections.scm");
+                    if let Ok(contents) = fs::read_to_string(path) {
+                        injections.push_str(&contents);
+                    }
+                } else {
+                    for relpath in config.injections {
+                        injections.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                    }
                 }
 
                 let mut locals = String::new();
-                for relpath in config.locals {
-                    locals.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                if config.locals.is_empty() {
+                    let path = grammar.join("queries/locals.scm");
+                    if let Ok(contents) = fs::read_to_string(path) {
+                        locals.push_str(&contents);
+                    }
+                } else {
+                    for relpath in config.locals {
+                        locals.push_str(&fs::read_to_string(grammar.join(relpath))?);
+                    }
                 }
 
-                return Ok(Grammar {
+                let grammar = Grammar {
                     parser,
                     highlights,
                     injections,
                     locals,
-                });
+                };
+
+                return Ok(grammar);
             }
         }
     }

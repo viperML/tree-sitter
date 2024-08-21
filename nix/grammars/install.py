@@ -45,5 +45,10 @@ for config in package_json["tree-sitter"]:
 
 
         except KeyError:
-            print(f"Couldn't find {thing}")
+            fallback = Path(f"queries/{thing}.scm")
+            if fallback.exists():
+                Path(out / fallback.parent).mkdir(parents=True, exist_ok=True)
+                shutil.copy(fallback, (out / fallback))
+            else:
+                print(f"Couldn't find {thing}")
 
