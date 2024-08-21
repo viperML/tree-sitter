@@ -3,10 +3,15 @@ name = "tree-sitter-cat"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "cats"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.5.11", features = ["derive"] }
 color-eyre = "0.6.3"
 eyre = "0.6.12"
+is-terminal = "0.4.13"
 magic = "0.16.2"
 serde = { version = "1.0.204", features = ["derive"] }
 toml = "0.8.19"
