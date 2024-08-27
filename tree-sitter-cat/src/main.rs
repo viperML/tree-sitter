@@ -8,6 +8,7 @@ use std::{
 
 use clap::Parser;
 use is_terminal::IsTerminal;
+use magic::cookie::Flags as CookieFlags;
 use serde::Deserialize;
 use tree_sitter_dynamic::{DynTS, STANDARD_CAPTURE_NAMES};
 use tree_sitter_highlight::{Highlight, HighlightEvent};
@@ -63,7 +64,7 @@ fn main() -> eyre::Result<()> {
         return Ok(());
     }
 
-    let cookie = magic::Cookie::open(magic::cookie::Flags::MIME_ENCODING)?;
+    let cookie = magic::Cookie::open(CookieFlags::MIME_ENCODING | CookieFlags::SYMLINK)?;
     let database = Default::default();
     let cookie = cookie.load(&database).unwrap();
     let file_result = cookie.file(&args.file)?;
