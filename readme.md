@@ -7,7 +7,7 @@ I created this repository to fill some holes in the tree-sitter ecosystem.
 
 This flake provides all compiled tree-sitter grammars.
 
-Two interfaces are provided:
+The interfaces are:
 
 ```
 packages.<system>.nvim-treesitter
