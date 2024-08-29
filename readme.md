@@ -17,13 +17,11 @@ legacyPackages.<system>.grammars.filtered
 
 :: AttrSet
 legacyPackages.<system>.nvim-grammars.filtered
-
-:: 
 ```
 
 - `nvim-treesitter` is the Neovim plugin. Use this instead of
-`vimPlugins.nvim-treesitter`, as I derive the versions from the compatible
-versions with upstream queries.
+`vimPlugins.nvim-treesitter`, as the versions of the grammars are compatible
+with this plugin version.
 - `nvim-grammars` are meant to be used with neovim. You can concat 
 `builtins.attrValues nvim-grammars.filtered` with your plugin list, or filter 
 them by name.
